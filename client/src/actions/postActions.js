@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ADD_POST, GET_ERRORS, GET_POSTS, POST_LOADING, DELETE_POST } from './types';
+import { ADD_POST, GET_ERRORS, GET_POSTS, POST_LOADING, DELETE_POST, GET_POST, ADD_COMMENT } from './types';
 
 // Add POST
 export const addPost = postData => dispatch => {
@@ -16,7 +16,7 @@ export const addPost = postData => dispatch => {
             )
 }
 
-// Add Posts
+// Get Posts
 export const getPosts = () => dispatch => {
     dispatch(setPostLoading());
     axios.get('/api/posts')
@@ -64,6 +64,37 @@ export const removeLike = id => dispatch => {
     axios.post(`/api/posts/unlike/${id}`)
         .then(res =>
             dispatch(getPosts())).catch(err =>
+            dispatch({
+                type: GET_ERRORS,
+                payload: err.res.data
+            })
+        )
+}
+
+// Get Post
+export const getPost = (id) => dispatch => {
+    dispatch(setPostLoading());
+    axios.get(`/api/post/${id}`)
+        .then(res =>
+            dispatch({
+                type: GET_POST,
+                payload: res.data
+            })).catch(err =>
+            dispatch({
+                type: GET_POST,
+                payload: null
+            })
+        )
+}
+
+// Add POST
+export const addComment = (postId, commentData) => dispatch => {
+    axios.post(`/api/post/comment/${postId}`, commentData)
+        .then(res =>
+            dispatch({
+                type: GET_POST,
+                payload: res.data
+            })).catch(err =>
             dispatch({
                 type: GET_ERRORS,
                 payload: err.res.data
